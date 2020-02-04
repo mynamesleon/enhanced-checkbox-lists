@@ -5,6 +5,8 @@
 
 Accessibly enhancing checkbox lists with filtering, toggling, select-all, and keyboard shortcuts
 
+[Try out the examples](https://mynamesleon.github.io/enhanced-checkbox-lists/)
+
 ## Installation / usage
 
 Grab from NPM and use in a module system:
