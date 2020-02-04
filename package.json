@@ -1,0 +1,37 @@
+{
+    "name": "enhanced-checkbox-list",
+    "version": "1.0.0-beta.1",
+    "description": "Add filtering, toggling, and select-all enhancements to existing checkbox lists",
+    "main": "dist/enhanced-checkbox-list.min.js",
+    "style": "dist/enhanced-checkbox-list.css",
+    "scripts": {
+        "build": "webpack",
+        "css": "lessc src/enhanced-checkbox-list.less dist/enhanced-checkbox-list.css"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mynamesleon/enhanced-checkbox-lists.git"
+    },
+    "files": [
+        "dist"
+    ],
+    "author": "Leon Slater (https://mynamesleon.com)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/mynamesleon/enhanced-checkbox-lists/issues"
+    },
+    "homepage": "https://github.com/mynamesleon/enhanced-checkbox-lists#readme",
+    "dependencies": {
+        "element-addclass": "^1.0.2",
+        "element-hasclass": "^1.0.1",
+        "element-removeclass": "^1.0.1",
+        "is-printable-keycode": "^1.0.3"
+    },
+    "devDependencies": {
+        "less": "^3.10.3",
+        "ts-loader": "^6.2.1",
+        "typescript": "^3.7.5",
+        "webpack": "^4.41.5",
+        "webpack-cli": "^3.3.10"
+    }
+}
