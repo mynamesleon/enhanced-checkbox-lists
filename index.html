@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Enhanced Checkbox Lists</title>
+        <meta
+            name="description"
+            content="Accessibly enhancing checkbox lists with filtering, toggling, select-all, and keyboard shortcuts"
+        />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@leon_slater" />
+        <meta name="twitter:title" content="Enhanced checkbox lists" />
+        <meta
+            name="twitter:description"
+            content="Accessibly enhancing checkbox lists with filtering, toggling, select-all, and keyboard shortcuts"
+        />
+        <link rel="stylesheet" href="dist/enhanced-checkbox-list.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/a11y-dark.min.css"
+        />
+        <script src="dist/enhanced-checkbox-list.min.js" type="text/javascript"></script>
+        <style type="text/css">
+            html {
+                color: #434343;
+                font-family: Arial, Helvetica, sans-serif;
+                background: #fcfcfb;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                line-height: 1.5em;
+            }
+
+            code {
+                font-family: monospace;
+                font-size: 1rem;
+                background: #f3f3f3;
+                border: 0.1875rem solid #f3f3f3;
+                font-weight: normal;
+                color: #000;
+            }
+
+            pre code {
+                border: none;
+            }
+
+            h1,
+            h2,
+            h3 {
+                font-weight: normal;
+            }
+
+            h1 {
+                font-size: 2.25rem;
+                line-height: 1;
+                display: flex;
+                flex-wrap: wrap;
+                width: 100%;
+                justify-content: space-between;
+                align-content: center;
+            }
+
+            h1 span {
+                display: block;
+            }
+
+            h1 small {
+                width: 100%;
+                font-size: 50%;
+                margin-top: 0.9375rem;
+                display: block;
+                line-height: 1.3;
+                box-sizing: border-box;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+
+            .button {
+                display: inline-block;
+                padding: 0.4375rem 1rem;
+                border: 0.125rem solid #434143;
+                background-color: transparent;
+                border-radius: 0.25rem;
+                text-decoration: none;
+                font-size: 1.125rem;
+                color: #434143;
+            }
+
+            .button:hover,
+            .button:focus {
+                background-color: #434143;
+                color: #fcfcfb;
+            }
+
+            section {
+                margin-top: 1.5rem;
+            }
+
+            section ~ section {
+                margin-top: 3rem;
+                padding-top: 1.5rem;
+                border-top: 0.125rem solid #606060;
+            }
+
+            dt,
+            dd {
+                display: block;
+                padding: 0 0 0 0.75rem;
+                border-left: 0.1875rem solid #606060;
+                margin: 0;
+            }
+
+            dt {
+                font-weight: bold;
+                margin-top: 0.9375rem;
+            }
+
+            dl > div ~ div {
+                margin-top: 1.875rem;
+                padding-top: 1.875rem;
+                border-top: 0.0625rem solid #d8d8d8;
+            }
+
+            dl > div dt:first-child {
+                margin-top: 0;
+            }
+
+            a:focus,
+            input:focus,
+            button:focus,
+            [tabindex='0']:focus,
+            input[type='checkbox']:focus + label:before {
+                outline: none;
+                border-color: #5e9ed6;
+                box-shadow: 0 0 0 0.0625rem #5e9ed6, 0 0 0.5rem rgba(94, 158, 214, 0.5);
+            }
+
+            #wrapper {
+                max-width: 47.5rem;
+                padding: 0 1.25rem;
+                margin: 3.75rem auto;
+                box-sizing: border-box;
+            }
+
+            .tile {
+                background: #fff;
+                margin: 0 auto 1.875rem;
+                padding: 1.875rem 1.5625rem;
+                border: 0.0625rem solid #ccc;
+                box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
+            }
+
+            .tile > h2,
+            .tile > h3 {
+                font-size: 1.375rem;
+                font-weight: normal;
+                padding-bottom: 0.9375rem;
+                border-bottom: 0.0625rem solid #ccc;
+            }
+
+            .tile > :first-child {
+                margin-top: 0;
+            }
+
+            .tile > :last-child {
+                margin-bottom: 0;
+            }
+
+            @media (max-width: 30rem) {
+                #wrapper {
+                    padding: 0 1.0625rem;
+                }
+
+                h1 span {
+                    width: 100%;
+                    margin-bottom: 0.9375rem;
+                }
+
+                .tile {
+                    padding: 1.375rem 1.0625rem;
+                }
+            }
+
+            fieldset {
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+
+            label:after {
+                content: '';
+                clear: both;
+                display: block;
+            }
+
+            input[type='checkbox'][hidden],
+            input[type='checkbox'][hidden] + label {
+                display: none !important;
+            }
+        </style>
+        <script>
+            var fruits = ['Akee','Apple','Apricot','Avocado','Açaí','Banana','Bell pepper','Bilberry','Black sapote','Blackberry','Blackcurrant','Blood orange','Blueberry','Boysenberry',"Buddha's hand",'Cactus pear','Cantaloupe','Cherimoya','Cherry','Chico fruit','Chile pepper','Clementine','Cloudberry','Coconut','Corn kernel','Crab apple','Cranberry','Cucumber','Currant','Damson','Date','Dragonfruit','Durian','Eggplant','Elderberry','Feijoa','Fig','Goji berry','Gooseberry','Grape','Grapefruit','Guava','Honeyberry','Honeydew','Huckleberry','Jabuticaba','Jackfruit','Jalapeño','Jambul','Japanese plum','Jostaberry','Jujube','Juniper berry','Kiwano','Kiwifruit','Kumquat','Lemon','Lime','Loganberry','Longan','Loquat','Lychee','Mandarine','Mango','Mangosteen','Marionberry','Melon','Miracle fruit','Mulberry','Nance','Nectarine','Olive','Orange','Papaya','Passionfruit','Pea','Peach','Pear','Persimmon','Pineapple','Pineberry','Pitaya','Plantain','Plum','Plumcot','Pomegranate','Pomelo','Prune','Pumpkin','Purple mangosteen','Quince','Raisin','Rambutan','Raspberry','Redcurrant','Salak','Salal','Salmonberry','Satsuma','Soursop','Squash','Star apple','Star fruit','Strawberry','Surinam cherry','Tamarillo','Tamarind','Tangelo','Tangerine','Tayberry','Tomato','Ugli fruit','Watermelon','White currant','White sapote','Yuzu','Zucchini'];
+            function createCheckboxListIn(id, listItems) {
+                document.getElementById(id).insertAdjacentHTML('beforeend', fruits.map(function(fruit) {
+                    var idToUse = id + '-' + fruit.toLowerCase();
+                    return (
+                        (listItems ? '<li>' : '') +
+                        '<input type="checkbox" id="' +
+                        idToUse +
+                        '" name="' +
+                        id +
+                        '" ' +
+                        'value="' +
+                        fruit +
+                        '" /><label for="' +
+                        idToUse +
+                        '">' +
+                        fruit +
+                        '</label>' +
+                        (listItems ? '</li>' : '')
+                    );
+                }).join(''));
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="wrapper">
+            <header>
+                <h1>
+                    <span>Enhanced Checkbox Lists</span>
+                    <a class="button" href="https://www.github.com/mynamesleon/enhanced-checkbox-lists">
+                        On GitHub
+                    </a>
+                    <small>
+                        Accessibly enhancing checkbox lists with filtering, toggling, select-all, and keyboard
+                        shortcuts
+                    </small>
+                </h1>
+            </header>
+            <main>
+                <section id="installation" class="tile">
+                    <h2>Installation and usage</h2>
+                    <p>You can grab the module from NPM:</p>
+                    <pre><code class="lang-bash">npm install enhanced-checkbox-list</code></pre>
+                    <p>And then import it to be used with your module system:</p>
+                    <pre><code class="lang-javascript">import EnhancedCheckboxList from 'enhanced-checkbox-list';
+new EnhancedCheckboxList(document.getElementById('list'), options);
+</code></pre>
+                    <p>Or you can grab the code straight from unpkg:</p>
+                    <pre><code class="lang-html">&lt;script src="https://unpkg.com/enhanced-checkbox-list"&gt;&lt;/script&gt;
+&lt;script&gt;
+    const list = document.getElementById('list');
+    new EnhancedCheckboxList(list, options);
+&lt;/script&gt;
+</code></pre>
+                    <p>
+                        The <code>EnhancedCheckboxList</code> function takes 2 arguments: the list element /
+                        wrapper, and an optional <a href="#options">options</a> object.
+                    </p>
+                </section>
+                <section id="examples">
+                    <h2>Examples</h2>
+                    <div class="tile" id="example-1">
+                        <h3>1. Default options: filtering, toggling, select all, and shortcuts</h3>
+                        <fieldset>
+                            <legend>Fruits</legend>
+                            <ul id="example-list-1"></ul>
+                        </fieldset>
+                        <script>
+                            createCheckboxListIn('example-list-1', true);
+                            new EnhancedCheckboxList(document.getElementById('example-list-1'));
+                        </script>
+                        <pre><code class="lang-html">&lt;fieldset&gt;
+    &lt;legend&gt;Fruits&lt;/legend&gt;
+    &lt;ul id="list"&gt;
+        &lt;!-- checkbox list items here --&gt;
+    &lt;/ul&gt;
+&lt;/fieldset&gt;
+</code></pre>
+                        <pre><code class="lang-javascript">const list = document.getElementById('list');
+new EnhancedCheckboxList(list);</code></pre>
+                        <p>
+                            When keyboard focus is on a checkbox in the list, you can use the home, end, pageup,
+                            and pagedown keys to jump to the first, last, +10th, or -10th checkbox respectively.
+                        </p>
+                        <p>
+                            The modifiers used for the pageup and pagedown keys are of course customisable using
+                            the <code>pageUpModifier</code> and <code>pageDownModifier</code> options respectively.
+                        </p>
+                    </div>
+                    <div class="tile" id="example-2">
+                        <h3>2. Enhanced list with toggling disabled</h3>
+                        <fieldset>
+                            <legend>Fruits</legend>
+                            <div id="example-list-2"></div>
+                        </fieldset>
+                        <script>
+                            createCheckboxListIn('example-list-2', false);
+                            new EnhancedCheckboxList(document.getElementById('example-list-2'), {
+                                togglable: false,
+                                itemSelector: ''
+                            });
+                        </script>
+                        <pre><code class="lang-html">&lt;fieldset&gt;
+    &lt;legend&gt;Fruits&lt;/legend&gt;
+    &lt;div id="list"&gt;
+        &lt;!-- checkboxes and labels here --&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;
+</code></pre>
+                        <pre><code class="lang-javascript">const list = document.getElementById('list');
+new EnhancedCheckboxList(list, {
+    togglable: false,
+    itemSelector: ''
+});</code></pre>
+                        <p>The filter input's value can also be cleared using the <code>Esc</code> key.</p>
+                        <p>
+                            This example has all of the checkboxes and labels directly inside of a
+                            <code>&lt;div&gt;</code>, instead of in list items. So we're setting the
+                            <code>itemSelector</code> option to an empty string to prevent any unnecessary DOM
+                            interrogation. This means that, after filtering, only the checkboxes themselves will be
+                            shown or hidden based on the filter value, so we need to use CSS to hide the sibling
+                            label.
+                        </p>
+                    </div>
+                    <div class="tile" id="example-3">
+                        <h3>3. Togglable and open by default, but not filterable</h3>
+                        <ul id="example-list-3" aria-label="Fruits"></ul>
+                        <script>
+                            createCheckboxListIn('example-list-3', true);
+                            new EnhancedCheckboxList(document.getElementById('example-list-3'), {
+                                filterable: false,
+                                visible: true
+                            });
+                        </script>
+                        <pre><code class="lang-html">&lt;ul id="list" aria-label="Fruits"&gt;
+    &lt;!-- checkbox list items here --&gt;
+&lt;/ul&gt;
+</code></pre>
+                        <pre><code class="lang-javascript">const list = document.getElementById('list');
+new EnhancedCheckboxList(list, {
+    filterable: false,
+    visible: true
+});</code></pre>
+                        <p>
+                            If togglable, you can also use the <code>Esc</code> key anywhere inside the wrapper
+                            (other than the filter input) to close the list.
+                        </p>
+                        <p>
+                            This example is also using an <code>aria-label</code> attribute on the list which is
+                            being used for the toggle button text (instead of being inside a
+                            <code>&lt;fieldset&gt;</code> with a <code>&lt;legend&gt;</code>).
+                        </p>
+                    </div>
+                    <div class="tile" id="example-4">
+                        <h3>
+                            4. All core functionality set to false<br /><small
+                                >(because that's supported for some reason...)</small
+                            >
+                        </h3>
+                        <p>
+                            This example basically just waps the checkbox list in a container... I'm not sure why
+                            you'd use it this way, but you can if you want to.
+                        </p>
+                        <fieldset>
+                            <legend>Fruits</legend>
+                            <ul id="example-list-4"></ul>
+                        </fieldset>
+                        <script>
+                            createCheckboxListIn('example-list-4', true);
+                            new EnhancedCheckboxList(document.getElementById('example-list-4'), {
+                                keyboardShortcuts: false,
+                                selectAllControl: false,
+                                filterable: false,
+                                togglable: false
+                            });
+                        </script>
+                        <pre><code class="lang-javascript">const list = document.getElementById('list');
+new EnhancedCheckboxList(list, {
+    keyboardShortcuts: false,
+    selectAllControl: false,
+    filterable: false,
+    togglable: false
+});</code></pre>
+                    </div>
+                    <div id="html-requirements" class="tile">
+                        <h3>HTML requirements</h3>
+                        <p>
+                            For proper, accessible checkbox lists, they should be in a
+                            <code>&lt;fieldset&gt;</code> with a <code>&lt;legend&gt;</code> to give the list
+                            context.
+                        </p>
+                        <p>
+                            If your list isn't in a <code>&lt;fieldset&gt;</code> though, the module will group and
+                            label the list for screen reader users, as long as a label can be found. When looking
+                            for a label for the list, the module attempts the following steps:
+                        </p>
+                        <ol>
+                            <li>Checking if the <code>listLabel</code> option has a value</li>
+                            <li>Check for an <code>aria-label</code> attribute on the list element</li>
+                            <li>
+                                Checking for an <code>aria-labelledby</code> attribute on the list element, and
+                                looking for an element with that <code>id</code>
+                            </li>
+                            <li>Checking if another element labels the list using a <code>for</code> attribute</li>
+                            <li>
+                                Travelling up the DOM tree looking for a <code>&lt;fieldset&gt;</code> element; if
+                                one is found, its <code>&lt;legend&gt;</code> text will be used
+                            </li>
+                        </ol>
+                        <p>For example:</p>
+                        <pre><code class="lang-html">&lt;ul aria-label="Fruits"&gt;
+    &lt;!-- list items in here --&gt;
+&lt;/ul&gt;
+</code></pre>
+                        <pre><code class="lang-html">&lt;span id="fruits-label" hidden&gt;Fruits&lt;/span&gt;
+&lt;ul id="fruits" aria-labelledby="fruits-label"&gt;
+    &lt;!-- list items in here --&gt;
+&lt;/ul&gt;
+</code></pre>
+                        <pre><code class="lang-html">&lt;span for="fruits" hidden&gt;Fruits&lt;/span&gt;
+&lt;ul id="fruits"&gt;
+    &lt;!-- list items in here --&gt;
+&lt;/ul&gt;
+</code></pre>
+                        <pre><code class="lang-html">&lt;fieldset&gt;
+    &lt;legend&gt;Fruits&lt;/legend&gt;
+    &lt;ul id="fruits"&gt;
+        &lt;!-- checkbox list items here --&gt;
+    &lt;/ul&gt;
+&lt;/fieldset&gt;
+</code></pre>
+                        <p>
+                            As well as giving the list context, this label is used for the toggle button text, and
+                            as part of a hidden label for the filter input for screen reader users.
+                        </p>
+                    </div>
+                </section>
+
+                <section id="options">
+                    <h2>Options</h2>
+                    <p>The full list of available options is as follows:</p>
+                    <div class="tile">
+                        <h3>Filtering</h3>
+                        <dl>
+                            <dt>filterable: <code>boolean</code></dt>
+                            <dd>
+                                Generate an input to allow filtering the list
+                                <br />Default <code>true</code>
+                            </dd>
+                            <dt>filterDelay: <code>number</code></dt>
+                            <dd>
+                                Delay after typing in the filter input before filtering (to allow for fast typers)
+                                <br />Default: <code>300</code>
+                            </dd>
+                            <dt>itemSelector: <code>string</code></dt>
+                            <dd>
+                                Selector to use when doing a <code>.closest()</code> DOM query to determine which
+                                element to show/hide after filtering <br />Default: <code>`li`</code>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="tile">
+                        <h3>Toggling</h3>
+                        <dl>
+                            <dt>togglable: <code>boolean</code></dt>
+                            <dd>
+                                Allow toggling visibility by generate a toggle button
+                                <br />Default <code>true</code>
+                            </dd>
+                            <dt>autoClose: <code>boolean</code></dt>
+                            <dd>
+                                If togglable, close when clicking or blurring outside of the container / button
+                                <br />Default: <code>false</code>
+                            </dd>
+                            <dt>visible: <code>boolean</code></dt>
+                            <dd>
+                                If togglable, determines initial visibility
+                                <br />Default: <code>false</code>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="tile">
+                        <h3>Select all</h3>
+                        <dl>
+                            <dt>selectAllControl: <code>boolean</code></dt>
+                            <dd>
+                                Include a custom select all control;
+                                <br />this has to be a custom element due to issues with updating the indeterminate
+                                state on native checkboxes in many browsers <br />Default: <code>true</code>
+                            </dd>
+                            <dt>selectAllText: <code>string</code></dt>
+                            <dd>
+                                Text for the select all control label
+                                <br />Default: <code>`Select all`</code>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="tile">
+                        <h3>Keyboard shortcuts</h3>
+                        <dl>
+                            <dt>keyboardShortcuts: <code>boolean</code></dt>
+                            <dd>
+                                If keyboard focus is on a checkbox, allow: home, end, pageup, and pagedown
+                                shortcuts to move to first, last, -10, or +10 checkbox respectively;
+                                <br />and escape key to close the wrapper if togglable <br />Default:
+                                <code>true</code>
+                            </dd>
+                            <dt>pageUpModifier: <code>number</code></dt>
+                            <dd>
+                                The index modifier for the pageup shortcut;
+                                <br />e.g. if on the 15th checkbox, use pageup to go to the 5th <br />Default:
+                                <code>-10</code>
+                            </dd>
+                            <dt>pageDownModifier: <code>number</code></dt>
+                            <dd>
+                                The index modifier for the pagedown shortcut;
+                                <br />e.g. if on the 5th checkbox, use pagedown to go to the 15th <br />Default:
+                                <code>10</code>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="tile">
+                        <h3>Rendering options</h3>
+                        <dl>
+                            <dt>tabindex: <code>number | string</code></dt>
+                            <dd>
+                                Control the tabindex added to the toggle button and select all control in case your
+                                checkbox list sits at a certain point in the page's tabbing order
+                                <br />Default: <code>`0`</code>
+                            </dd>
+                            <dt>cssNameSpace: <code>string</code></dt>
+                            <dd>
+                                String to prepend to classes for BEM naming
+                                <br />e.g. "enhanced-checkbox-list__wrapper" <br />Default:
+                                <code>`enhanced-checkbox-list`</code>
+                            </dd>
+                            <dt>listLabel: <code>string</code></dt>
+                            <dd>
+                                Label for the checkbox list - used for the toggle button text and the label for the
+                                filter input;
+                                <br />if not provided, the module will search for one using
+                                <code>aria-label</code> or <code>aria-labelledby</code> attributes, or looking for
+                                a parent <code>&lt;fieldset&gt;</code>'s
+                                <code>&lt;legend&gt;</code>
+                            </dd>
+                            <dt>filterClassName: <code>string</code></dt>
+                            <dd>
+                                Custom class name to add to the filter text input
+                            </dd>
+                            <dt>toggleClassName: <code>string</code></dt>
+                            <dd>
+                                Custom class name to add to the toggle button
+                            </dd>
+                            <dt>wrapperClassName: <code>string</code></dt>
+                            <dd>
+                                Custom class name to add to the component wrapper
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="tile">
+                        <h3>Screen reader enhancements</h3>
+                        <dl>
+                            <dt>srEscapeToCloseText: <code>string</code></dt>
+                            <dd>
+                                Screen reader text added to list wrapper advising shortcut to close the wrapper (if
+                                toggling enabled)
+                                <br />Default: <code>`Esc to close`</code>
+                            </dd>
+                            <dt>srEscapeToClearText: <code>string</code></dt>
+                            <dd>
+                                Screen reader text added to filter field advising shortcut to clear filter value
+                                (if filtering enabled)
+                                <br />Default: <code>`Esc to clear`</code>
+                            </dd>
+                            <dt>srFilterText: <code>string</code></dt>
+                            <dd>
+                                Screen reader text used for label explaining the search/filter input;
+                                <br />combines with <code>listLabel</code> if available <br />e.g. "filter
+                                departments" <br />Default: <code>`filter`</code>
+                            </dd>
+                            <dt>srFoundText: <code>string</code></dt>
+                            <dd>
+                                Partial screen reader text used in message after filtering e.g. "12 found, 3
+                                selected" <br />Default: <code>`found`</code>
+                            </dd>
+                            <dt>srSelectedText: <code>string</code></dt>
+                            <dd>
+                                Partial screen reader text used in message after filtering e.g. "12 found, 3
+                                selected" <br />Default: <code>`selected`</code>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="tile">
+                        <h3>Callbacks</h3>
+                        <dl>
+                            <dt>onFilter: <code>Function</code></dt>
+                            <dd>
+                                Callback after a filter has run
+                            </dd>
+                            <dt>onReady: <code>Function</code></dt>
+                            <dd>
+                                Callback once ready
+                            </dd>
+                            <dt>onShow: <code>Function</code></dt>
+                            <dd>
+                                Callback when the list is toggled visible
+                            </dd>
+                            <dt>onHide: <code>Function</code></dt>
+                            <dd>
+                                Callback when the list is toggled hidden
+                            </dd>
+                        </dl>
+                        <p>
+                            All component options that accept a function will also have their context
+                            (<code>this</code>) set to include the full API (assuming you use an ordinary function
+                            expression instead of arrow functions).
+                        </p>
+                    </div>
+                </section>
+                <section id="api">
+                    <h2>API</h2>
+                    <div class="tile">
+                        <p>
+                            The returned
+                            <code>EnhancedCheckboxList</code> instance exposes the following API ((which is also
+                            available on the original element's <code>enhancedCheckboxList</code> property):
+                        </p>
+                        <dl>
+                            <dt>list: <code>HTMLElement</code></dt>
+                            <dd>The original list element that the function was called on</dd>
+                            <dt>options: <code>EnhancedCheckboxListOptions</code></dt>
+                            <dd>The instance options that were / are being used</dd>
+                            <dt>checkboxes: <code>HTMLInputElement[]</code></dt>
+                            <dd>The checkboxes that the instance currently recognises and will affect</dd>
+                            <dt>listWrapper: <code>HTMLDivElement</code></dt>
+                            <dd>The wrapping <code>&lt;div&gt;</code> generated by the module</dd>
+                            <dt>filterInput: <code>HTMLInputElement</code></dt>
+                            <dd>The filtering input generated by the module</dd>
+                            <dt>selectAllCheckbox: <code>HTMLSpanElement</code></dt>
+                            <dd>The generated custom select all element</dd>
+                            <dt>show: <code>(): void</code></dt>
+                            <dd>Toggle the checkbox list wrapper visible</dd>
+                            <dt>hide: <code>(): void</code></dt>
+                            <dd>Toggle the checkbox list wrapper hidden</dd>
+                            <dt>
+                                filter: <code>(value: string, updateScreenReaderText: boolean = false): void</code>
+                            </dt>
+                            <dd>Filter the checkbox list by a chosen value</dd>
+                            <dt>destroy: <code>(clearInternalCache: boolean = false): void</code></dt>
+                            <dd>Destroy the component</dd>
+                        </dl>
+                    </div>
+                </section>
+            </main>
+            <footer>
+                <a class="button" href="https://www.github.com/mynamesleon/enhanced-checkbox-lists">On GitHub</a>
+            </footer>
+        </div>
+        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+        <script>
+            hljs.initHighlightingOnLoad();
+        </script>
+    </body>
+</html>
