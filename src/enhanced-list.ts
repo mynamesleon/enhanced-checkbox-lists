@@ -787,14 +787,14 @@ export default class EnhancedList {
         // so we need to make sure the list wrapper exists, and check if the button toggle does
         if (!this.listWrapper) {
             this.listWrapper = this.list.parentElement as HTMLDivElement;
-            if (!this.listWrapper.matches(`${this.cssNameSpace}__wrapper`)) {
+            if (!this.listWrapper.matches(`.${this.cssNameSpace}__wrapper`)) {
                 return;
             }
             if (!this.button) {
                 const possibleButton: Element = this.listWrapper.previousElementSibling;
                 if (
                     possibleButton.nodeName === 'BUTTON' &&
-                    possibleButton.matches(`${this.cssNameSpace}__toggle`)
+                    possibleButton.matches(`.${this.cssNameSpace}__toggle`)
                 ) {
                     this.button = possibleButton as HTMLButtonElement;
                 }
