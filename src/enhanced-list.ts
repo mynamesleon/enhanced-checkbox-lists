@@ -739,6 +739,7 @@ export default class EnhancedList {
             this.selectAllKeyDownEvent = (event: KeyboardEvent) => {
                 // trigger using space key
                 if (event.keyCode === 32) {
+                    event.preventDefault();
                     this.toggleAllVisibleCheckboxes(event);
                 }
             };
@@ -803,10 +804,11 @@ export default class EnhancedList {
 
         // remove selectAll events
         if (this.selectAll) {
-            removeEvent(this.selectAll, 'click', this.selectAllClickEvent);
-            removeEvent(this.selectAll, 'keydown', this.selectAllKeyDownEvent);
-            removeEvent(this.selectAll, 'focusin', this.selectAllFocusInEvent);
-            removeEvent(this.selectAll, 'focusout', this.selectAllFocusOutEvent);
+            const selectAllParent: HTMLElement = this.selectAll.parentElement;
+            removeEvent(selectAllParent, 'click', this.selectAllClickEvent);
+            removeEvent(selectAllParent, 'keydown', this.selectAllKeyDownEvent);
+            removeEvent(selectAllParent, 'focusin', this.selectAllFocusInEvent);
+            removeEvent(selectAllParent, 'focusout', this.selectAllFocusOutEvent);
         }
 
         // remove search events
