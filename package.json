@@ -1,6 +1,6 @@
 {
     "name": "enhanced-checkbox-list",
-    "version": "1.0.0-beta.2",
+    "version": "1.0.0",
     "description": "Add filtering, toggling, and select-all enhancements to existing checkbox lists",
     "main": "dist/enhanced-checkbox-list.min.js",
     "style": "dist/enhanced-checkbox-list.css",
