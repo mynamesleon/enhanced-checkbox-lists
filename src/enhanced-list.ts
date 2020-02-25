@@ -325,15 +325,16 @@ export default class EnhancedList {
         const cleanedValue: string = cleanString(value, true);
         const itemSelector: string = this.options.itemSelector;
 
+        // reset visible array
+        this.visibleCheckboxIndexes = [];
+
         // store indexes of checkboxes to keep visible
-        // start with checked items, as we want to always keep these visible
-        this.visibleCheckboxIndexes = this.checkedCheckboxIndexes.slice();
         this.checkboxes.forEach((checkbox: HTMLInputElement, index: number) => {
             // set all to hide initially - css only
             this.hide(this.getItemSelectorElem(checkbox, itemSelector));
-            // store indexes of ones to show
-            const isAlreadyInArray: boolean = this.visibleCheckboxIndexes.indexOf(index) > -1;
-            if (!isAlreadyInArray && this.allCheckboxLabels[index].search(cleanedValue) !== -1) {
+            // always keep selected items visible
+            const isChecked: boolean = this.checkedCheckboxIndexes.indexOf(index) > -1;
+            if (isChecked || this.allCheckboxLabels[index].search(cleanedValue) !== -1) {
                 this.visibleCheckboxIndexes.push(index);
             }
         });
