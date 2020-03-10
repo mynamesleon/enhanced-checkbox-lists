@@ -63,6 +63,12 @@ Or grab the minified JavaScript from unpkg:
     visible: boolean = false;
 
     /**
+     * text to use for the toggle button
+     */
+    toggleButtonText: string | ((listLabel: string, checkedCount: number) => string) =
+        (listLabel, checkedCount) => `${listLabel} (${checkedCount})`;
+
+    /**
      * include a custom select all control;
      * this has to be a custom element due to issues with updating
      * the indeterminate state on native checkboxes in many browsers

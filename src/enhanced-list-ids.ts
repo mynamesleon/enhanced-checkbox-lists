@@ -8,6 +8,7 @@ export default class {
     BUTTON: string;
     WRAPPER: string;
     SELECT_ALL: string;
+    LIST_WRAPPER: string;
     SELECT_ALL_LABEL: string;
     ESCAPE_TO_CLOSE: string;
     ESCAPE_TO_CLEAR: string;
@@ -23,6 +24,7 @@ export default class {
         this.BUTTON = `${this.PREFIX}-button`;
         this.WRAPPER = `${this.PREFIX}-wrapper`;
         this.SELECT_ALL = `${this.PREFIX}-select-all`;
+        this.LIST_WRAPPER = `${this.PREFIX}-list-wrapper`;
         this.SELECT_ALL_LABEL = `${this.PREFIX}-select-all-label`;
         this.ESCAPE_TO_CLOSE = `${this.PREFIX}-escape-to-close`;
         this.ESCAPE_TO_CLEAR = `${this.PREFIX}-escape-to-clear`;

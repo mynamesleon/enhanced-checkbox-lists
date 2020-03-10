@@ -361,7 +361,42 @@ new EnhancedCheckboxList(list, {
                     </div>
                     <div class="tile" id="example-4">
                         <h3>
-                            4. All core functionality set to false<br /><small
+                            4. Auto-closing panel, with custom button text
+                        </h3>
+                        <p>This example only shows the number of checked items in the button if there are some.</p>    
+                        <ul id="example-list-4" aria-label="Fruits"></ul>
+                        <script>
+                            createCheckboxListIn('example-list-4', true);
+                            new EnhancedCheckboxList(document.getElementById('example-list-4'), {
+                                togglable: true,
+                                autoClose: true,
+                                toggleButtonText: function (listLabel, checkedCount) {
+                                    var labelLower = listLabel.toLowerCase();
+                                    if (checkedCount === 0) {
+                                        return 'Select ' + labelLower;
+                                    } else if (checkedCount > 0) {
+                                        return 'Chosen ' + labelLower + ' (' + checkedCount + ')';
+                                    }
+                                }
+                            });
+                        </script>
+                        <pre><code class="lang-javascript">const list = document.getElementById('list');
+new EnhancedCheckboxList(list, {
+    togglable: true,
+    autoClose: true,
+    toggleButtonText: (listLabel, checkedCount) => {
+        const labelLower = listLabel.toLowerCase();
+        if (checkedCount === 0) {
+            return `Select ${labelLower}`;
+        } else if (checkedCount > 0) {
+            return `Chosen ${labelLower} (${checkedCount})`;
+        }
+    }
+});</code></pre>
+                    </div>
+                    <div class="tile" id="example-5">
+                        <h3>
+                            5. All core functionality set to false<br /><small
                                 >(because that's supported for some reason...)</small
                             >
                         </h3>
@@ -371,11 +406,11 @@ new EnhancedCheckboxList(list, {
                         </p>
                         <fieldset>
                             <legend>Fruits</legend>
-                            <ul id="example-list-4"></ul>
+                            <ul id="example-list-5"></ul>
                         </fieldset>
                         <script>
-                            createCheckboxListIn('example-list-4', true);
-                            new EnhancedCheckboxList(document.getElementById('example-list-4'), {
+                            createCheckboxListIn('example-list-5', true);
+                            new EnhancedCheckboxList(document.getElementById('example-list-5'), {
                                 keyboardShortcuts: false,
                                 selectAllControl: false,
                                 filterable: false,
@@ -474,6 +509,11 @@ new EnhancedCheckboxList(list, {
                             <dd>
                                 Allow toggling visibility by generate a toggle button
                                 <br />Default <code>true</code>
+                            </dd>
+                            <dt>toggleButtonText: <code>string | ((listLabel: string, checkedCount: number) => string)</code></dt>
+                            <dd>
+                                Text to use in the toggle button; can accept a string, or function.
+                                <br />Default <code>(listLabel, checkedCount) => `${listLabel} (${checkedCount})`</code>
                             </dd>
                             <dt>autoClose: <code>boolean</code></dt>
                             <dd>

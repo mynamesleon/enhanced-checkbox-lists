@@ -30,6 +30,11 @@ export default class EnhancedListOptions {
     visible: boolean = false;
 
     /**
+     * text to use for the toggle button
+     */
+    toggleButtonText: string | ((listLabel: string, checkedCount: number) => string);
+
+    /**
      * include a custom select all control;
      * this has to be a custom element due to issues with updating
      * the indeterminate state on native checkboxes in many browsers
@@ -73,9 +78,9 @@ export default class EnhancedListOptions {
     cssNameSpace: string = `enhanced-checkbox-list`;
 
     /**
-     * custom class name to add to the filter text input
+     * custom class name to add to the component wrapper
      */
-    filterClassName: string;
+    wrapperClassName: string;
 
     /**
      * custom class name to add to the toggle button
@@ -83,9 +88,14 @@ export default class EnhancedListOptions {
     toggleClassName: string;
 
     /**
-     * custom class name to add to the component wrapper
+     * custom class name to add to the filter text input
      */
-    wrapperClassName: string;
+    filterClassName: string;
+
+    /**
+     * custom class name to add to the list wrapper
+     */
+    listWrapperClassName: string;
 
     /**
      * label for the checkbox list - used for the toggle button text and

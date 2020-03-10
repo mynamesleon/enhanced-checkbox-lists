@@ -47,6 +47,7 @@ export default class EnhancedList {
     // elements
     list: HTMLElement;
     button: HTMLButtonElement;
+    componentWrapper: HTMLDivElement;
     checkboxes: HTMLInputElement[];
     listWrapper: HTMLDivElement;
     searchField: HTMLInputElement;
@@ -59,12 +60,9 @@ export default class EnhancedList {
     listChangeEvent: EventListenerOrEventListenerObject;
 
     buttonClickEvent: EventListenerOrEventListenerObject;
-    buttonFocusOutEvent: EventListenerOrEventListenerObject;
 
     listWrapperKeyDownEvent: EventListenerOrEventListenerObject;
-    listWrapperFocusOutEvent: EventListenerOrEventListenerObject;
 
-    searchFieldFilterEvent: EventListenerOrEventListenerObject;
     searchFieldKeyDownEvent: EventListenerOrEventListenerObject;
     searchFieldInputEvent: EventListenerOrEventListenerObject;
 
@@ -78,7 +76,7 @@ export default class EnhancedList {
     autoCloseTimeout: ReturnType<typeof setTimeout>;
 
     // functional storate
-    documentClickBound: boolean;
+    autoCloseBound: boolean;
     allCheckboxLabels: string[] = [];
     visibleCheckboxIndexes: number[] = [];
     checkedCheckboxIndexes: number[] = [];
@@ -203,22 +201,24 @@ export default class EnhancedList {
     }
 
     /**
-     * removing document click binding
+     * removing auto close handling
      */
-    unbindDocumentClick() {
-        if (this.documentClickBound && this.autoCloseEvent) {
+    unbindAutoClose() {
+        if (this.autoCloseBound && this.autoCloseEvent) {
+            this.componentWrapper.removeEventListener('focusout', this.autoCloseEvent);
             document.removeEventListener('click', this.autoCloseEvent);
-            this.documentClickBound = false;
+            this.autoCloseBound = false;
         }
     }
 
     /**
-     * document click binding for closing the list
+     * bind auto close handling for closing the list
      */
-    bindDocumentClick() {
-        if (!this.documentClickBound && this.autoCloseEvent) {
+    bindAutoClose() {
+        if (!this.autoCloseBound && this.autoCloseEvent) {
+            this.componentWrapper.addEventListener('focusout', this.autoCloseEvent);
             document.addEventListener('click', this.autoCloseEvent);
-            this.documentClickBound = true;
+            this.autoCloseBound = true;
         }
     }
 
@@ -239,7 +239,7 @@ export default class EnhancedList {
 
         if (visible) {
             this.show(this.listWrapper);
-            this.bindDocumentClick();
+            this.bindAutoClose();
         } else {
             this.hide(this.listWrapper);
         }
@@ -280,6 +280,33 @@ export default class EnhancedList {
     }
 
     /**
+     * update toggle button text
+     */
+    updateToggleButtonText(checkedCount: number) {
+        if (!this.button) {
+            return;
+        }
+
+        let textToUse: string;
+        const toggleButtonText = this.options.toggleButtonText;
+        if (toggleButtonText) {
+            if (typeof toggleButtonText === 'string') {
+                textToUse = toggleButtonText;
+            } else if (typeof toggleButtonText === 'function') {
+                textToUse = toggleButtonText(this.getListLabel(), checkedCount);
+            }
+        }
+
+        // check if textToUse is undefined, as we want to allow explicit empty string
+        if (typeof textToUse === 'undefined') {
+            textToUse = `${this.getListLabel()} (${checkedCount})`;
+        }
+
+        // allow use of html in this case
+        this.button.innerHTML = textToUse;
+    }
+
+    /**
      * set button text and include number of checked checkboxes in brackets.
      * Also update select all aria-owns (ids) and aria-checked state (true, false, or mixed)
      */
@@ -287,10 +314,8 @@ export default class EnhancedList {
         this.getAllCheckedCheckboxIndexes();
         const countChecked: number = this.checkedCheckboxIndexes.length;
 
-        // include count in button
-        if (this.button) {
-            this.button.textContent = `${this.getListLabel()} (${countChecked})`;
-        }
+        // update toggle button text
+        this.updateToggleButtonText(countChecked);
 
         // update select all to show indeterminate state / checked
         if (this.selectAll) {
@@ -388,6 +413,15 @@ export default class EnhancedList {
         this.filterTimeout = setTimeout(() => {
             this.runFilter.call(this, this.searchField.value, true);
         }, delay);
+
+        // only include escape to clear message if search field has a value
+        const value = this.searchField.value;
+        const describedBy = this.searchField.getAttribute('aria-describedby');
+        if (value && !describedBy) {
+            this.searchField.setAttribute('aria-describedby', this.ids.ESCAPE_TO_CLEAR);
+        } else if (!value && describedBy) {
+            this.searchField.removeAttribute('aria-describedby');
+        }
     }
 
     /**
@@ -452,13 +486,34 @@ export default class EnhancedList {
         const srOnlyClasses: string = `${cssNameSpace}--sr-only visually-hidden sr-only`;
         const searchClass: string = this.options.filterClassName ? ` ${this.options.filterClassName}` : '';
         const toggleClass: string = this.options.toggleClassName ? ` ${this.options.toggleClassName}` : '';
-        const wrapperClass: string = this.options.wrapperClassName ? ` ${this.options.wrapperClassName}` : '';
+        const listClass: string = this.options.listWrapperClassName ? ` ${this.options.listWrapperClassName}` : '';
+        let wrapperClass: string = this.options.wrapperClassName ? ` ${this.options.wrapperClassName}` : '';
+
+        // classes to add to component wrapper based on chosen options
+        const wrapperClassPrefix = `${cssNameSpace}__wrapper`;
+        if (this.options.togglable) {
+            wrapperClass += ` ${wrapperClassPrefix}--togglable`;
+        }
+        if (this.options.autoClose) {
+            wrapperClass += ` ${wrapperClassPrefix}--auto-close`;
+        }
+        if (this.options.filterable) {
+            wrapperClass += ` ${wrapperClassPrefix}--filterable`;
+        }
+        if (this.options.selectAllControl) {
+            wrapperClass += ` ${wrapperClassPrefix}--select-all`;
+        }
+        if (this.options.keyboardShortcuts) {
+            wrapperClass += ` ${wrapperClassPrefix}--keyboard-shortcuts`;
+        }
+
+        newHtml.push(`<div id="${this.ids.WRAPPER}" class="${wrapperClassPrefix}${wrapperClass}">`);
 
         // if togglable, create button to toggle visibility
         // leave empty to begin with, as the text will be set later when checked counts are detected
         if (togglable) {
             newHtml.push(
-                `<button aria-expanded="false" tabindex="${this.options.tabindex}" aria-controls="${this.ids.WRAPPER}" ` +
+                `<button aria-expanded="false" tabindex="${this.options.tabindex}" aria-controls="${this.ids.LIST_WRAPPER}" ` +
                     `class="${cssNameSpace}__toggle${toggleClass}" id="${this.ids.BUTTON}" type="button"></button>`
             );
         }
@@ -467,11 +522,10 @@ export default class EnhancedList {
         const listLabel = this.getListLabel();
         const grouping = listLabel && !this.listFieldset ? ` role="group" aria-label="${listLabel}"` : ``;
 
-        // start the wrapper element for the list
-        // must be focusable with a tabindex to prevent clicking on it from closing it (in autoClose mode)
+        // start the list wrapper element
         newHtml.push(
-            `<div${grouping} class="${cssNameSpace}__wrapper${wrapperClass}" ` +
-                `id="${this.ids.WRAPPER}" aria-describedby="${this.ids.ESCAPE_TO_CLOSE}">`
+            `<div${grouping} class="${cssNameSpace}__list-wrapper${listClass}" ` +
+                `id="${this.ids.LIST_WRAPPER}" aria-describedby="${this.ids.ESCAPE_TO_CLOSE}">`
         );
 
         // include screen reader element for announcement after filtering even if not filterable
@@ -496,7 +550,7 @@ export default class EnhancedList {
                     } ${this.getListLabel()}</label>` +
                     // add the filtering input
                     `<input class="${cssNameSpace}__filter-input${searchClass}" value="" type="search" ` +
-                    `id="${this.ids.SEARCH}" aria-controls="${this.ids.LIST}" aria-describedby="${this.ids.ESCAPE_TO_CLEAR}" />` +
+                    `id="${this.ids.SEARCH}" aria-controls="${this.ids.LIST}" />` +
                     // screen reader only explainer of esc to clear behaviour on the input
                     `<span class="${srOnlyClasses}" id="${this.ids.ESCAPE_TO_CLEAR}">${this.options.srEscapeToClearText}</span>` +
                     // close the filtering area
@@ -519,13 +573,14 @@ export default class EnhancedList {
         }
 
         // close the wrapper and insert into the dom;
-        newHtml.push(`</div>`);
+        newHtml.push(`</div></div>`);
         this.list.insertAdjacentHTML('beforebegin', newHtml.join(''));
 
         // set element references
         this.srCount = document.getElementById(this.ids.COUNT) as HTMLSpanElement;
         this.button = document.getElementById(this.ids.BUTTON) as HTMLButtonElement;
-        this.listWrapper = document.getElementById(this.ids.WRAPPER) as HTMLDivElement;
+        this.listWrapper = document.getElementById(this.ids.LIST_WRAPPER) as HTMLDivElement;
+        this.componentWrapper = document.getElementById(this.ids.WRAPPER) as HTMLDivElement;
         this.searchField = document.getElementById(this.ids.SEARCH) as HTMLInputElement;
         this.selectAll = document.getElementById(this.ids.SELECT_ALL) as HTMLSpanElement;
 
@@ -539,28 +594,23 @@ export default class EnhancedList {
      */
     handleAutoClose(event: Event) {
         if (!this.options.togglable || !this.options.autoClose) {
+            this.unbindAutoClose();
             return;
         }
-
         // must use a timer, so that focusout event fires after focus has moved to a new element
         clearTimeout(this.autoCloseTimeout);
         this.autoCloseTimeout = setTimeout(() => {
             // do nothing if moving to an element that's part of the component
-            const target: Element = event.target as Element;
-            const button: HTMLButtonElement = this.button;
-            const wrapper: HTMLElement = this.listWrapper;
+            const wrapper: HTMLElement = this.componentWrapper;
             const activeElem: Element = document.activeElement;
-            if (
-                wrapper.contains(target) ||
-                wrapper.contains(activeElem) ||
-                (button && (button.contains(target) || button.contains(activeElem)))
-            ) {
+            const target: HTMLElement = event.target as HTMLElement;
+            if ((event.type === 'click' && wrapper.contains(target)) || wrapper.contains(activeElem)) {
                 return;
             }
             // hide and unbind document click, as it's not needed until re-opened
             this.hide.call(this);
-            this.unbindDocumentClick();
-        }, 0);
+            this.unbindAutoClose();
+        }, 100);
     }
 
     /**
@@ -683,7 +733,7 @@ export default class EnhancedList {
     bindEvents() {
         // autoclosing - bind this regardless, and do the options check inside
         this.autoCloseEvent = this.handleAutoClose.bind(this);
-        this.bindDocumentClick();
+        this.bindAutoClose();
 
         // update button text and count
         this.listChangeEvent = (event: Event) => {
@@ -696,29 +746,22 @@ export default class EnhancedList {
 
         // button toggling
         if (this.button) {
-            this.buttonFocusOutEvent = this.autoCloseEvent;
             this.buttonClickEvent = (event: Event) => {
                 event.preventDefault();
                 this.cache(CACHE_VISIBLE_PROP) ? this.hide() : this.show();
             };
             this.button.addEventListener('click', this.buttonClickEvent);
-            this.button.addEventListener('focusout', this.buttonFocusOutEvent);
         }
 
         // bind search behaviour
         if (this.searchField) {
-            this.searchFieldFilterEvent = this.handleFilterKeyDown.bind(this);
-            this.searchFieldKeyDownEvent = this.searchFieldFilterEvent;
+            this.searchFieldKeyDownEvent = this.handleFilterKeyDown.bind(this);
             this.searchFieldInputEvent = this.filterPrep.bind(this);
             this.searchField.addEventListener('keydown', this.searchFieldKeyDownEvent);
             // trigger filter on input event as well as keydown to cover bases
-            // e.g. clearing the value uses the clear icon in Internet Explorer
+            // e.g. clearing the value using the clear icon in Internet Explorer
             this.searchField.addEventListener('input', this.searchFieldInputEvent);
         }
-
-        // autoclosing when focusing off the list wrapper
-        this.listWrapperFocusOutEvent = this.autoCloseEvent;
-        this.listWrapper.addEventListener('focusout', this.listWrapperFocusOutEvent);
 
         // close the container when pressing escape key from anywhere inside it
         this.listWrapperKeyDownEvent = this.handleKeyDown.bind(this);
@@ -767,7 +810,7 @@ export default class EnhancedList {
             const checkboxLabel = getLabelFor(checkbox);
             // ensure all checkboxes have ids if using select all control
             if (selectAllExists && !checkbox.id) {
-                checkbox.setAttribute('id', `${this.ids.WRAPPER}-checkbox-${index}`);
+                checkbox.setAttribute('id', `${this.ids.LIST_WRAPPER}-checkbox-${index}`);
             }
 
             // clean and store labels
@@ -789,7 +832,7 @@ export default class EnhancedList {
         // so we need to make sure the list wrapper exists, and check if the button toggle does
         if (!this.listWrapper) {
             this.listWrapper = this.list.parentElement as HTMLDivElement;
-            if (!this.listWrapper.matches(`.${this.cssNameSpace}__wrapper`)) {
+            if (!this.listWrapper.matches(`.${this.cssNameSpace}__list-wrapper`)) {
                 return;
             }
             if (!this.button) {
@@ -800,6 +843,13 @@ export default class EnhancedList {
                 ) {
                     this.button = possibleButton as HTMLButtonElement;
                 }
+            }
+        }
+
+        if (!this.componentWrapper) {
+            this.componentWrapper = this.listWrapper.parentElement as HTMLDivElement;
+            if (!this.componentWrapper.matches(`.${this.cssNameSpace}__wrapper`)) {
+                return;
             }
         }
 
@@ -821,7 +871,6 @@ export default class EnhancedList {
         // remove button toggle and events
         if (this.button) {
             removeEvent(this.button, 'click', this.buttonClickEvent);
-            removeEvent(this.button, 'focusout', this.buttonFocusOutEvent);
             this.button.parentElement.removeChild(this.button);
         }
 
@@ -829,26 +878,27 @@ export default class EnhancedList {
         if (this.list) {
             removeEvent(this.list, 'change', this.listChangeEvent);
             removeClass(this.list, `${this.cssNameSpace}__list`);
-            this.listWrapper.parentElement.insertBefore(this.list, this.listWrapper);
+            this.componentWrapper.parentElement.insertBefore(this.list, this.componentWrapper);
             // delete instance from element
             if (this.list[API_STORAGE_PROP]) {
                 delete this.list[API_STORAGE_PROP];
             }
         }
 
+        // unbind auto-close if it is still bound
+        this.unbindAutoClose();
+
         // remove the wrapper itself and its events
         removeEvent(this.listWrapper, 'keydown', this.listWrapperKeyDownEvent);
-        removeEvent(this.listWrapper, 'focusout', this.listWrapperFocusOutEvent);
-        this.listWrapper.parentElement.removeChild(this.listWrapper);
+        this.componentWrapper.parentElement.removeChild(this.componentWrapper);
 
         // set all checkboxes back to being visible
-        const selector = this.options.itemSelector;
-        this.checkboxes.forEach((checkbox: HTMLInputElement) => {
-            this.show(this.getItemSelectorElem(checkbox, selector));
-        });
-
-        // unbind document click if it is still bound
-        this.unbindDocumentClick();
+        if (this.checkboxes && this.checkboxes.length) {
+            const selector = this.options.itemSelector;
+            this.checkboxes.forEach((checkbox: HTMLInputElement) => {
+                this.show(this.getItemSelectorElem(checkbox, selector));
+            });
+        }
 
         // delete cached states
         if (clearInternalCache) {
@@ -862,7 +912,10 @@ export default class EnhancedList {
     init() {
         // if it seems that markup structure is already present, destroy and remake
         this.cssNameSpace = this.options.cssNameSpace;
-        if (this.list.parentElement.matches(`.${this.cssNameSpace}__wrapper`)) {
+        if (
+            this.list.parentElement.matches(`.${this.cssNameSpace}__list-wrapper`) &&
+            this.list.parentElement.parentElement.matches(`.${this.cssNameSpace}__wrapper`)
+        ) {
             this.destroy();
         }
 
