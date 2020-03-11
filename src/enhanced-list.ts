@@ -136,16 +136,16 @@ export default class EnhancedList {
      * hide element with CSS only - if none provided, set list state to hidden
      */
     hide(element?: HTMLElement) {
-        const cssNameSpace: string = this.cssNameSpace;
+        const hideClass = `${this.cssNameSpace}--hide`;
         if (typeof element !== 'undefined') {
-            addClass(element, `${cssNameSpace}--hide hide hidden`);
+            addClass(element, `${hideClass} hide hidden`);
             element.setAttribute('aria-hidden', 'true');
             element.setAttribute('hidden', 'hidden');
             return;
         }
 
         const wrapper = this.listWrapper;
-        if (wrapper.getAttribute('hidden') !== 'hidden' && !hasClass(wrapper, `${cssNameSpace}--hide`)) {
+        if (wrapper && wrapper.getAttribute('hidden') !== 'hidden' && !hasClass(wrapper, hideClass)) {
             this.setListState(false);
             this.triggerOptionCallback('onHide');
         }
@@ -205,8 +205,8 @@ export default class EnhancedList {
      */
     unbindAutoClose() {
         if (this.autoCloseBound && this.autoCloseEvent) {
-            this.componentWrapper.removeEventListener('focusout', this.autoCloseEvent);
-            document.removeEventListener('click', this.autoCloseEvent);
+            removeEvent(this.componentWrapper, 'focusout', this.autoCloseEvent);
+            removeEvent(document, 'click', this.autoCloseEvent);
             this.autoCloseBound = false;
         }
     }
@@ -593,7 +593,7 @@ export default class EnhancedList {
      * close the container when clicking outside of it
      */
     handleAutoClose(event: Event) {
-        if (!this.options.togglable || !this.options.autoClose) {
+        if (!this.options.togglable || !this.options.autoClose || !this.listWrapper) {
             this.unbindAutoClose();
             return;
         }
@@ -899,6 +899,9 @@ export default class EnhancedList {
                 this.show(this.getItemSelectorElem(checkbox, selector));
             });
         }
+
+        // remove listWrapper storage in case of any lingering autoClose events
+        this.listWrapper = null;
 
         // delete cached states
         if (clearInternalCache) {

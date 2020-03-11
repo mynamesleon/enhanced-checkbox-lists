@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
--   Fixed issue with the `autoClose` behaviour which wasn't always working when blurring off of the component
+-   Issue with the `autoClose` behaviour which wasn't always working when blurring off of the component
+-   Issue with the `autoClose` click and focusout events persisting if a list is removed from the DOM (but not properly destroyed) and another autoClose list with the same ID is later added and initialised
 
 [1.1.0]: https://github.com/mynamesleon/enhanced-checkbox-lists/compare/v1.0.0...v1.1.0

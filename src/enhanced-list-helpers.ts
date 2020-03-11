@@ -83,7 +83,7 @@ export function isCheckboxOrRadio(element: HTMLElement | EventTarget): boolean {
  * remove event listener helper
  */
 export function removeEvent(
-    element: HTMLElement,
+    element: EventTarget,
     event: string,
     eventListener: EventListenerOrEventListenerObject
 ) {
