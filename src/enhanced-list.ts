@@ -524,7 +524,7 @@ export default class EnhancedList {
 
         // start the list wrapper element
         newHtml.push(
-            `<div${grouping} class="${cssNameSpace}__list-wrapper${listClass}" ` +
+            `<div${grouping} class="${cssNameSpace}__list-wrapper${listClass}" tabindex="-1" ` +
                 `id="${this.ids.LIST_WRAPPER}" aria-describedby="${this.ids.ESCAPE_TO_CLOSE}">`
         );
 
