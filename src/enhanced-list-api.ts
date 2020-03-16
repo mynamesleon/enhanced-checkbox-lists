@@ -23,6 +23,7 @@ export default class {
         // bind methods to list instance to keep it private
         this.show = this.show.bind(instance);
         this.hide = this.hide.bind(instance);
+        this.update = this.update.bind(instance);
         this.filter = this.filter.bind(instance);
         this.destroy = this.destroy.bind(instance);
         instance.list[API_STORAGE_PROP] = this;
@@ -34,6 +35,13 @@ export default class {
 
     filter(this: EnhancedList, value: string, updateScreenReaderText?: boolean) {
         this.filter.call(this, value, updateScreenReaderText);
+    }
+
+    update(this: EnhancedList, updateCheckboxStorage: boolean = true) {
+        if (updateCheckboxStorage) {
+            this.setCheckboxArrays.call(this);
+        }
+        this.updateCheckedStates.call(this);
     }
 
     show(this: EnhancedList) {

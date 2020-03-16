@@ -570,6 +570,11 @@ new EnhancedCheckboxList(list, {
                     <div class="tile">
                         <h3>Rendering options</h3>
                         <dl>
+                            <dt>checkboxSelector: <code>string</code></dt>
+                            <dd>
+                                Selector to use when finding the checkboxes in the list
+                                <br />Default: <code>`input[type="checkbox"], input[type="radio"]`</code>
+                            </dd>
                             <dt>tabindex: <code>number | string</code></dt>
                             <dd>
                                 Control the tabindex added to the toggle button and select all control in case your
@@ -690,6 +695,8 @@ new EnhancedCheckboxList(list, {
                             <dd>Toggle the checkbox list wrapper visible</dd>
                             <dt>hide: <code>(): void</code></dt>
                             <dd>Toggle the checkbox list wrapper hidden</dd>
+                            <dt>update: <code>(updateCheckboxStorage: boolean = true): void</code></dt>
+                            <dd>Update the toggle button text and select all state</dd>
                             <dt>
                                 filter: <code>(value: string, updateScreenReaderText: boolean = false): void</code>
                             </dt>

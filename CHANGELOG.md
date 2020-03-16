@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 -   `toggleButtonText` option that accepts either a string or a function
+-   new `update` method in the API, to refetch checkboxes, and update the toggle button text and select all state, for if the selected checkboxes have been changed by external code
+-   `checkboxSelector` option
 
 ### Changed
 

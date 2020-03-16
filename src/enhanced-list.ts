@@ -530,7 +530,9 @@ export default class EnhancedList {
 
         // include screen reader element for announcement after filtering even if not filterable
         // in case filtering is triggered from the API
-        newHtml.push(`<span class="${srOnlyClasses}" aria-live="polite" id="${this.ids.COUNT}"></span>`);
+        newHtml.push(
+            `<span class="${srOnlyClasses}" aria-live="polite" aria-atomic="true" id="${this.ids.COUNT}"></span>`
+        );
 
         // add descriptive text for escape to close
         if (togglable && this.options.keyboardShortcuts && this.options.srEscapeToCloseText) {
@@ -798,7 +800,7 @@ export default class EnhancedList {
      * set important arrays of checkbox labels and visible indexes
      */
     setCheckboxArrays() {
-        const checkboxes = this.list.querySelectorAll('input[type="checkbox"], input[type="radio"]');
+        const checkboxes = this.list.querySelectorAll(this.options.checkboxSelector);
         const selectAllExists = this.options.selectAllControl && this.selectAll;
         const hideClass = `${this.cssNameSpace}--hide`;
         this.checkboxes = Array.prototype.slice.call(checkboxes);
