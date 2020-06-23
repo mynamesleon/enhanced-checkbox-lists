@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 -   The `srEscapeToClearText` is now only associated with the filter input when the input has a value
+-   Destroy method is now more defensive
 
 ### Fixed
 

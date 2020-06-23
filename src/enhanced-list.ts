@@ -873,14 +873,14 @@ export default class EnhancedList {
         // remove button toggle and events
         if (this.button) {
             removeEvent(this.button, 'click', this.buttonClickEvent);
-            this.button.parentElement.removeChild(this.button);
+            this.button.parentElement?.removeChild(this.button);
         }
 
         // move the original list back into place
         if (this.list) {
             removeEvent(this.list, 'change', this.listChangeEvent);
             removeClass(this.list, `${this.cssNameSpace}__list`);
-            this.componentWrapper.parentElement.insertBefore(this.list, this.componentWrapper);
+            this.componentWrapper.parentElement?.insertBefore(this.list, this.componentWrapper);
             // delete instance from element
             if (this.list[API_STORAGE_PROP]) {
                 delete this.list[API_STORAGE_PROP];
@@ -892,7 +892,7 @@ export default class EnhancedList {
 
         // remove the wrapper itself and its events
         removeEvent(this.listWrapper, 'keydown', this.listWrapperKeyDownEvent);
-        this.componentWrapper.parentElement.removeChild(this.componentWrapper);
+        this.componentWrapper.parentElement?.removeChild(this.componentWrapper);
 
         // set all checkboxes back to being visible
         if (this.checkboxes && this.checkboxes.length) {
